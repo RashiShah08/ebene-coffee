@@ -1,149 +1,243 @@
 # ÉBÈNE Coffee House
 
-A single-page site for a fictional coffee house at 12 Church Street, Bengaluru.
-Fourteen drinks you can order, three farms behind them, and a map to the door.
+A single-page marketing and ordering site for a coffee house at 12 Church
+Street, Bengaluru. Fourteen drinks you can add to an order, the three farms
+behind them, and a map to the door.
 
-React + Vite. No framework beyond that, no CSS library, no state library.
+Built with React and Vite. No UI framework, no CSS library, no state library.
+
+---
+
+## Contents
+
+- [Quick start](#quick-start)
+- [The page](#the-page)
+- [Project structure](#project-structure)
+- [Adding or changing a drink](#adding-or-changing-a-drink)
+- [Architecture notes](#architecture-notes)
+- [Accessibility](#accessibility)
+- [Performance](#performance)
+- [Testing](#testing)
+- [Known limitations](#known-limitations)
+
+---
+
+## Quick start
+
+**Requirements:** Node 18 or newer (developed on Node 24) and npm.
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
-npm run build      # → dist/
-npm run preview    # serve the production build
+npm run dev       # development server, http://localhost:5173
+npm run build     # production bundle → dist/
+npm run preview   # serve the built bundle locally
 ```
+
+`npm run dev` uses the next free port if 5173 is taken; Vite prints the actual
+URL on start.
 
 ---
 
 ## The page
 
-| # | Section | id | What it does |
-|---|---------|-----|--------------|
-| — | Hero | `#top` | Wordmark, photograph, and a small WebGL bean cluster |
-| 01 | Our ritual | `#ritual` | The manifesto |
-| 02 | Origins | `#origin` | Three farms as a spec sheet, each linked to the cup it becomes |
-| 03 | The menu | `#menu` | 14 photographed cards, filterable, with in-card quantity steppers |
-| 04 | Visit | `#visit` | Google map, address, hours, reservation |
-| — | Press | — | A pull quote |
+One scrolling page. The header links mirror the section order and are numbered
+to match, so the navigation reads as a table of contents rather than a list.
 
-The header links mirror that order and are numbered to match — it reads as a
-table of contents rather than an arbitrary list.
+| Section | Anchor | Contents |
+| --- | --- | --- |
+| Hero | `#top` | Wordmark, photograph, and a small WebGL bean cluster |
+| Our ritual | `#ritual` | The house statement |
+| Origins | `#origin` | Three farms as a spec sheet, each tied to the cup it becomes |
+| The menu | `#menu` | 14 photographed cards, filterable, with in-card quantity steppers |
+| Visit | `#visit` | Map, address, opening hours, reservation |
+| Press | — | A pull quote |
+
+Ordering is client-side only: adding a drink updates local state, the header
+badge, and a toast. Checkout and the reservation form are demonstrations — they
+validate and confirm, but post nowhere.
 
 ---
 
-## Structure
+## Project structure
 
 ```
 src/
-├─ main.jsx                 entry; stylesheet order is load-bearing (see below)
-├─ App.jsx                  page composition, cart state, toast
+├─ main.jsx                 Entry point. Stylesheet import order is load-bearing.
+├─ App.jsx                  Page composition, cart state, toast, image map
 ├─ menu.js                  DRINKS, CATEGORIES, ORIGINS — all copy and prices
-├─ cart.js                  money formatting and cart maths
+├─ cart.js                  Currency formatting and cart arithmetic
+│
 ├─ components/
-│  ├─ SiteNav.jsx           sticky glass header, scroll-spy, reading progress
-│  ├─ OriginStudio.jsx      the beans: tab rail, spec sheet, cup
-│  ├─ VisitSection.jsx      map + practical details
+│  ├─ SiteNav.jsx           Fixed header: glass on scroll, scroll-spy, progress rule
+│  ├─ OriginStudio.jsx      Origins: tab rail, spec sheet, resulting cup
+│  ├─ VisitSection.jsx      Map alongside address, hours and actions
 │  ├─ StreetMap.jsx         Google Maps embed, mounted on approach
-│  └─ CoffeeOrbit.jsx       hero WebGL — lazy-loaded, desktop only
+│  └─ CoffeeOrbit.jsx       Hero WebGL — lazy-loaded, desktop only
+│
 ├─ hooks/
-│  ├─ useNavState.js        one rAF listener → scrolled / progress / active
-│  ├─ useSmoothUpdate.js    view-transition filtering + scroll anchoring
+│  ├─ useNavState.js        One rAF-throttled listener → scrolled / progress / active
+│  ├─ useSmoothUpdate.js    View-transition filtering with scroll anchoring
 │  ├─ useDismissable.js     Escape, scroll lock, focus trap, focus restore
-│  └─ useMediaQuery.js
+│  └─ useMediaQuery.js      Subscribes to a media query
+│
 ├─ styles/                  base → motion → functional → press → cards → origin → visit → nav
 └─ assets/                  15 WebP photographs
 ```
 
-### Content lives in `menu.js`
+### Stylesheet order is significant
 
-Adding a drink is one entry — name, `img` basename, tasting notes, size, price,
-category. Nothing else needs touching:
-
-```js
-{ no: 'No. 07', name: 'Saffron Cortado', img: 'saffron-cortado',
-  notes: 'Rose cardamom · steamed milk', size: '120 ml', price: 340, cat: 'espresso' }
-```
-
-The `img` key lives on the drink rather than in a separate name→file lookup, so
-renaming a drink can never silently orphan its photograph. Flavour chips are
-split from `notes` on `·`, so there is no second copy of the flavour text.
+`main.jsx` imports eight stylesheets, and later ones deliberately override
+earlier ones — `nav.css` owns the header outright, `cards.css` owns the menu.
+Reordering the imports changes the rendered page.
 
 ---
 
-## Decisions worth knowing
+## Adding or changing a drink
 
-**Stylesheet order matters.** `main.jsx` imports eight sheets and later ones
-deliberately override earlier ones — `nav.css` owns the header outright,
-`cards.css` owns the menu. Reorder the imports and the page changes.
+Everything the menu renders comes from one entry in `src/menu.js`:
 
-**Money is never parsed back out of text.** `cart.js` holds numbers; `inr()` is
-the only thing that formats them. Cart lines are keyed by what makes two orders
-genuinely different, so the same drink tapped twice is one row with `qty: 2`.
+```js
+{
+  no: 'No. 07',
+  name: 'Saffron Cortado',
+  img: 'saffron-cortado',              // basename of the file in src/assets
+  notes: 'Rose cardamom · steamed milk',
+  size: '120 ml',
+  price: 340,                          // whole rupees
+  cat: 'espresso',                     // must match an id in CATEGORIES
+}
+```
 
-**three.js is lazy-loaded and desktop-only.** It is ~875 kB — five times the
-rest of the app — for one decorative flourish in the hero. It loads after first
-paint and is not rendered at all below 760px.
+Add a matching `saffron-cortado.webp` to `src/assets` and the card, the category
+count and the filter all update. Two deliberate choices here:
 
-**The map is a Google embed, mounted on approach.** An `IntersectionObserver`
-mounts the iframe about a screen early rather than using `loading="lazy"`, which
-did not fire reliably. Nobody who never scrolls to Visit pays for Google's
-cookies or ~1 MB of script.
+- **The image key lives on the drink**, not in a separate name-to-file lookup,
+  so renaming a drink cannot silently orphan its photograph.
+- **Flavour chips are split from `notes` on `·`**, so there is no second copy of
+  the flavour text to keep in sync.
 
-**Filtering animates via the View Transitions API.** Each card carries a unique
-`view-transition-name`, so surviving cards glide to their new grid slot instead
-of the row redrawing. The state update runs inside `flushSync` — without it
-React would batch past the browser's "after" snapshot and nothing would animate.
-Firefox gets a crossfade instead.
+Origins work the same way. Each entry's `becomes` field must match a
+`DRINKS.name`; that is what pairs a farm with the cup it produces.
 
-**Filtering must not move the page.** Dropping from 14 cards to 2 shortens the
-document by ~1,600 px, and Chrome's scroll anchoring responds by scrolling to
-hold some node it picked — dragging the page out from under you. The grid sets
-`overflow-anchor: none` and `useSmoothUpdate` pins the filter bar's exact screen
-position across the change.
+---
 
-**Images are WebP at render size.** The masters were 27.6 MB of PNG; the shipped
-set is 1.1 MB. Regenerate with `sharp` (a devDependency) if new photography
-arrives — note the sources are no longer in the repo.
+## Architecture notes
+
+The decisions below are not obvious from reading the code, which is why they are
+written down.
+
+### Money is never parsed out of text
+
+`cart.js` holds prices as numbers and `inr()` is the only function that formats
+them. Cart lines are keyed by what genuinely distinguishes two orders, so the
+same drink added twice becomes one row with `qty: 2` rather than two rows.
+
+### three.js is lazy-loaded and desktop-only
+
+The hero's bean cluster costs 875 kB — roughly five times the rest of the
+application — for one decorative flourish. It is split into its own chunk via
+`React.lazy`, loads after first paint, and is not rendered at all below 760 px.
+
+### The map is a Google embed, mounted on approach
+
+`StreetMap.jsx` mounts the iframe through an `IntersectionObserver` with a
+600 px margin rather than relying on `loading="lazy"`, which did not fire
+reliably in testing. Anyone who never scrolls to Visit pays nothing for Google's
+cookies or scripts.
+
+### Filtering animates through the View Transitions API
+
+Each card carries a unique `view-transition-name`, so cards that survive a
+filter change glide to their new grid position instead of the row being redrawn.
+The state update runs inside `flushSync`: React batches by default, and without
+it the DOM would not be in its final state when the browser takes its "after"
+snapshot, so nothing would animate. Browsers without the API — currently
+Firefox — receive a short crossfade instead.
+
+### Filtering must not move the page
+
+Narrowing from fourteen cards to two shortens the document by roughly 1,600 px.
+Chrome's scroll anchoring reacts by scrolling to hold a node of its own
+choosing, which drags the page out from under the reader. Two things prevent it:
+the grid sets `overflow-anchor: none`, and `useSmoothUpdate` measures the filter
+bar's screen position before the change and restores it afterwards. The
+correction is applied with `behavior: 'instant'`, because the document sets
+`scroll-behavior: smooth` and would otherwise animate the very jump being
+cancelled.
+
+### Photography ships at render size
+
+Source masters were 27.6 MB of PNG. The shipped set is 15 WebP files totalling
+1.1 MB, resized to what the layout actually renders. `sharp` is included as a
+development dependency for regenerating them.
 
 ---
 
 ## Accessibility
 
-- Both overlays close on Escape, lock background scroll, trap Tab, and return
-  focus to whatever opened them.
-- The origin tabs are a real `tablist`; the active nav link carries
-  `aria-current`; quantity steppers announce which drink they belong to.
-- Decorative layers — the bean cluster, the nav pill, the profile bars — are
-  `aria-hidden`, since the number beside a bar already says what it says.
-- Every animation is disabled under `prefers-reduced-motion`, including the
-  filter transition, which falls back to an instant swap.
+- Both overlays — the order drawer and the reservation dialog — close on
+  Escape, lock background scrolling, trap Tab within the panel, and return focus
+  to the control that opened them.
+- The origin selector is a genuine `tablist` with three `tab` controls and a
+  linked `tabpanel`. The current navigation link carries `aria-current`.
+- Quantity steppers name the drink they belong to, so "one more" is never
+  ambiguous out of context.
+- Decorative layers — the bean cluster, the travelling nav pill, the flavour
+  meters — are `aria-hidden`, since the value beside a meter already states it.
+- Every image has an `alt` attribute; the page has exactly one `h1`.
+- All motion is disabled under `prefers-reduced-motion`, including the filter
+  transition, which degrades to an instant swap.
+
+---
+
+## Performance
+
+Production bundle, gzipped in brackets:
+
+| Asset | Size |
+| --- | --- |
+| `index.js` | 168 kB (55 kB) |
+| `index.css` | 33 kB (8 kB) |
+| `CoffeeOrbit.js` | 875 kB (240 kB) — deferred, desktop only |
+| 15 WebP photographs | 1.1 MB total, lazily loaded |
+
+Card and map images load on demand, so a first view costs the initial bundle
+plus the hero photograph.
 
 ---
 
 ## Testing
 
-There is no test runner. The site was verified by driving a headless Chrome over
-the DevTools Protocol against the **production build** at 1440 / 1000 / 414 px:
-rendering, all 14 images, origin tab switching, filtering and scroll stability,
-the cart maths, both overlays, the mobile nav, and the map — 61 checks, plus
-zero console errors and zero failed requests at every viewport.
+There is no unit-test runner. The site is verified end to end by driving a
+headless Chrome over the DevTools Protocol against the **production build** at
+1440 px, 1000 px and 414 px: rendering, all fourteen images, origin tab
+switching, filtering and scroll stability, cart arithmetic, both overlays,
+the mobile navigation, and the map — 61 assertions, plus zero console errors and
+zero failed network requests at every viewport.
 
-Two habits that caught real bugs, worth keeping:
+Two habits from building this are worth carrying forward:
 
-- **Measure, don't eyeball.** "The screen moves when I filter" turned out to be
-  Chrome's scroll anchoring, not a layout bug — provable only by logging scroll
-  position against element position.
-- **Distrust a green screenshot.** A cross-origin iframe changes Chrome's
-  compositing path, and `Page.captureScreenshot` starts returning the top of the
-  document regardless of scroll. Capture in a fresh tab, and verify scroll
-  separately before believing an image.
+- **Measure rather than eyeball.** "The screen moves when I filter" turned out
+  to be Chrome's scroll anchoring rather than a layout fault, and that was only
+  provable by logging scroll position against element position.
+- **Do not trust a screenshot on its own.** A cross-origin iframe changes
+  Chrome's compositing path, after which `Page.captureScreenshot` returns the
+  top of the document regardless of scroll position. Capture in a fresh tab, and
+  confirm scroll separately before believing an image.
 
 ---
 
-## Notes
+## Known limitations
 
-- `removed-source-backup.zip` holds an earlier, unused WebGL scroll build that
-  was deleted from `src/`. Delete it once you are sure you do not want it.
-- The reservation form is a demo — it validates and shows a confirmation, but
-  posts nowhere.
-- The Google Maps embed is the keyless `output=embed` form. For production, use
-  the official Maps Embed API with a key.
+- **Ordering and reservations are not wired to a backend.** Both flows validate
+  and confirm in the interface, then stop.
+- **The Google Maps embed uses the keyless `output=embed` form.** A production
+  deployment should use the official Maps Embed API with a key, and the Visit
+  section requires network access to render.
+- **Photography is shipped at display resolution.** The higher-resolution PNG
+  masters are no longer in the repository, so images cannot be re-exported
+  larger from here.
+- **`removed-source-backup.zip`** holds an earlier, unused WebGL scroll build
+  that was removed from `src/`. It predates this repository and is committed so
+  that it stays recoverable; it can be deleted at any time and retrieved from
+  history.
