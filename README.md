@@ -237,7 +237,10 @@ Two habits from building this are worth carrying forward:
 - **Photography is shipped at display resolution.** The higher-resolution PNG
   masters are no longer in the repository, so images cannot be re-exported
   larger from here.
-- **`removed-source-backup.zip`** holds an earlier, unused WebGL scroll build
-  that was removed from `src/`. It predates this repository and is committed so
-  that it stays recoverable; it can be deleted at any time and retrieved from
-  history.
+- **An earlier WebGL scroll build was removed** before this repository was
+  published. It predates version control here, so it was committed once as
+  `removed-source-backup.zip` and then deleted from the tree. Recover it with:
+
+  ```bash
+  git show 441733c:removed-source-backup.zip > removed-source-backup.zip
+  ```
