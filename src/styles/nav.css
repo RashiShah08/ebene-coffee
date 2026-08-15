@@ -1,0 +1,153 @@
+/* ==========================================================================
+   The header.
+
+   Loaded last, so it owns .site-nav outright rather than negotiating with the
+   older rules in journey.css and functional.css.
+   ========================================================================== */
+
+.site-nav{
+  /* Published as a variable because the mobile panel hangs off the bar and has
+     to know exactly how tall it currently is. */
+  --nav-h:92px;
+  position:fixed;top:0;left:0;right:0;z-index:15;
+  height:var(--nav-h);padding:0 clamp(20px,5vw,72px);
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  color:var(--cream);
+  background:transparent;
+  transition:height .5s cubic-bezier(.16,1,.3,1),background .5s ease,backdrop-filter .5s ease,box-shadow .5s ease}
+
+/* The glass only exists once there is page behind the bar — over the hero the
+   header stays borderless. */
+.site-nav.stuck{
+  --nav-h:70px;
+  background:linear-gradient(180deg,rgba(30,18,12,.72),rgba(30,18,12,.52));
+  backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);
+  box-shadow:0 20px 44px rgba(0,0,0,.3)}
+/* A hairline that fades out at both ends, so the glass edge doesn't read as a
+   hard rule drawn across the page. */
+.site-nav.stuck:after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(230,198,150,.32) 18%,rgba(230,198,150,.32) 82%,transparent)}
+
+@supports not (backdrop-filter:blur(1px)){
+  .site-nav.stuck,.site-nav.nav-open{background:rgba(26,15,10,.96)}
+}
+
+/* ---- brand ------------------------------------------------------------- */
+
+.brand{display:flex;align-items:center;gap:10px;justify-self:start;white-space:nowrap}
+.brand>span:first-child{font:italic 32px var(--serif);color:#d7a565;line-height:1}
+.brand-word{display:flex;flex-direction:column;justify-content:center}
+.brand b{font:500 19px var(--serif);letter-spacing:.15em;line-height:1.05}
+/* The descriptor retires into the wordmark as the bar compresses, so the
+   lockup tightens on scroll instead of just shrinking. */
+.brand small{font:8px var(--mono);letter-spacing:.26em;text-transform:uppercase;color:#b49a7d;
+  overflow:hidden;max-height:14px;opacity:.85;margin-top:3px;
+  transition:opacity .35s ease,max-height .5s cubic-bezier(.16,1,.3,1),margin-top .5s cubic-bezier(.16,1,.3,1)}
+.site-nav.stuck .brand small{opacity:0;max-height:0;margin-top:0}
+
+/* ---- links ------------------------------------------------------------- */
+
+.nav-links{position:relative;display:flex;align-items:center;gap:4px;justify-self:center}
+
+.nav-links>a{position:relative;z-index:1;display:inline-flex;align-items:baseline;gap:7px;
+  padding:9px 15px;border-radius:100px;font-size:13px;color:rgba(246,236,220,.68);
+  transition:color .35s ease}
+.nav-links>a:hover,.nav-links>a[data-active='true']{color:var(--cream)}
+
+/* The index number. Tabular so the pill never jitters by a pixel between 01
+   and 04 as the active link changes. */
+.nav-links>a i{font:9px var(--mono);font-style:normal;font-variant-numeric:tabular-nums;
+  letter-spacing:.08em;color:#a5793f;transition:color .35s ease}
+.nav-links>a[data-active='true'] i{color:var(--gold)}
+
+/* Two stacked copies of the label inside a mask: the first rides up as the
+   second rides in, so the word swaps instead of merely fading. */
+.nav-label{position:relative;display:inline-block;overflow:hidden;vertical-align:bottom}
+.nav-label>span{display:block;transition:transform .55s cubic-bezier(.16,1,.3,1)}
+.nav-label>span:last-child{position:absolute;left:0;top:100%;width:100%}
+.nav-links>a:hover .nav-label>span{transform:translateY(-100%)}
+
+/* One lit pill that travels between links — the movement is the whole idea, so
+   width and position are both animated. */
+.nav-pill{position:absolute;left:0;top:50%;z-index:0;height:36px;width:var(--pill-w,0);
+  transform:translate(var(--pill-x,0),-50%);
+  border-radius:100px;background:rgba(255,246,232,.09);border:1px solid rgba(214,166,101,.3);
+  opacity:0;pointer-events:none;
+  transition:transform .6s cubic-bezier(.16,1,.3,1),width .6s cubic-bezier(.16,1,.3,1),opacity .45s ease}
+.nav-pill.on{opacity:1}
+
+/* ---- actions ----------------------------------------------------------- */
+
+.nav-actions{display:flex;align-items:center;gap:14px;justify-self:end}
+.cart-button{border:0;background:transparent;color:var(--cream);font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;display:inline-flex;align-items:center}
+.cart-button b{display:inline-grid;place-items:center;margin-left:7px;min-width:19px;height:19px;border-radius:50%;background:var(--gold);color:#26160e;font-size:9px;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.cart-button:hover b{transform:scale(1.12)}
+
+.nav-book{position:relative;overflow:hidden;color:var(--cream);border:1px solid rgba(255,250,242,.4);border-radius:100px;background:transparent;padding:11px 19px;font:10px var(--mono);letter-spacing:.11em;text-transform:uppercase;transition:color .35s ease,border-color .35s ease}
+.nav-book i{font-style:normal;margin-left:9px;color:var(--gold);transition:color .35s ease}
+/* The fill grows from the bottom rather than sliding across — quieter, and it
+   never clips the label mid-transition. */
+.nav-book:before{content:'';position:absolute;inset:0;z-index:-1;background:var(--cream);transform:translateY(101%);transition:transform .45s cubic-bezier(.16,1,.3,1)}
+.nav-book:hover{color:var(--coffee);border-color:var(--cream)}
+.nav-book:hover:before{transform:none}
+.nav-book:hover i{color:#8a6039}
+.nav-book>*{position:relative}
+
+/* ---- reading progress -------------------------------------------------- */
+
+.nav-progress{position:absolute;left:0;bottom:0;height:1.5px;width:100%;transform-origin:0 50%;
+  background:linear-gradient(90deg,#8a6039,var(--gold),#f0cf9a);opacity:0;transition:opacity .5s ease}
+.site-nav.stuck .nav-progress{opacity:1}
+
+/* ---- mobile ------------------------------------------------------------ */
+
+.nav-toggle{display:none}
+
+@media(max-width:980px){
+  .site-nav{grid-template-columns:1fr auto}
+  /* Fixed, not absolute: as a grid item its absolute containing block would
+     be its own grid column, which collapsed the panel into a narrow box. */
+  .nav-links{position:fixed;left:0;right:0;top:var(--nav-h);display:block;justify-self:stretch;
+    /* Solid, and deliberately no backdrop-filter: a blur behind an opaque
+       surface is invisible work, and compositing it was letting the page
+       behind bleed through the panel. */
+    background:linear-gradient(180deg,#1a0f0a,#20130d);
+    border-top:1px solid rgba(230,198,150,.16);padding:0 clamp(20px,5vw,72px);
+    box-shadow:0 24px 44px rgba(0,0,0,.45);
+    /* Collapsed by max-height so it can animate; visibility keeps the hidden
+       links out of the tab order. */
+    max-height:0;overflow:hidden;visibility:hidden;
+    transition:max-height .45s cubic-bezier(.16,1,.3,1),visibility .45s}
+  .site-nav.nav-open .nav-links{max-height:340px;visibility:visible}
+  .site-nav.nav-open{background:linear-gradient(180deg,rgba(30,18,12,.82),rgba(30,18,12,.66));
+    backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6)}
+
+  .nav-links>a{display:flex;padding:0;border-radius:0;line-height:56px;font-size:15px;
+    border-bottom:1px solid rgba(255,250,242,.09);gap:12px}
+  .nav-links>a:last-child{border-bottom:0}
+  /* The travelling pill has nothing to travel along in a stacked list. */
+  .nav-pill{display:none}
+  .nav-label{overflow:visible}
+  .nav-label>span:last-child{display:none}
+
+  .nav-toggle{display:grid;place-content:center;gap:5px;width:36px;height:36px;border:1px solid rgba(255,250,242,.4);border-radius:100px;background:transparent;padding:0}
+  .nav-toggle b{display:block;width:15px;height:1px;background:var(--cream);transition:transform .35s cubic-bezier(.16,1,.3,1)}
+  .nav-toggle[aria-expanded='true'] b:first-child{transform:translateY(3px) rotate(45deg)}
+  .nav-toggle[aria-expanded='true'] b:last-child{transform:translateY(-3px) rotate(-45deg)}
+}
+
+@media(max-width:620px){
+  .site-nav{--nav-h:76px}
+  .site-nav.stuck{--nav-h:64px}
+  .nav-book{display:none}
+  .brand b{font-size:17px}
+  .brand span{font-size:26px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .nav-pill,.nav-label>span,.site-nav,.nav-book:before{transition-duration:.01ms}
+}
+
+/* Slightly denser glass over the dark counter, where a thin film read milky
+   rather than luxurious. */
+.site-nav.stuck{background:linear-gradient(180deg,rgba(28,16,11,.82),rgba(28,16,11,.6))}

@@ -1,0 +1,70 @@
+/* ==========================================================================
+   Visit — the reserve banner and the after-dark panel merged into one.
+
+   They were the same invitation written twice, and the after-dark link even
+   pointed at #visit, the section containing it. Framed as wayfinding now:
+   where we are, when we are open, and what you can do about it.
+
+   Paper rather than another dark slab — the menu above is deep espresso, a map
+   reads best on light, and the tonal jump is what makes the section land.
+   ========================================================================== */
+
+.visit-section{background:#efe5d5;color:#2f1d10;padding:126px clamp(22px,11vw,175px)}
+
+/* ---- head -------------------------------------------------------------- */
+
+.visit-head{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,6vw,90px);align-items:end;
+  padding-bottom:64px}
+.visit-section .kicker{color:#9a6535;margin-bottom:20px}
+.visit-section h2{font:500 clamp(52px,7vw,110px)/.86 var(--serif);letter-spacing:-.065em;margin:0}
+.visit-lead{max-width:440px;margin:0 0 6px;font-size:15px;line-height:1.85;color:#6b5544}
+
+/* ---- body -------------------------------------------------------------- */
+
+.visit-body{display:grid;grid-template-columns:1.55fr 1fr;gap:clamp(34px,4.5vw,68px);align-items:start}
+
+.visit-map{margin:0}
+
+/* Google Maps, embedded. Fixed height rather than an aspect ratio so the frame
+   never collapses while the iframe is still loading. */
+.map-frame{position:relative;width:100%;height:clamp(340px,42vw,470px);border-radius:4px;overflow:hidden;
+  background:#e8e0d4;
+  /* A printed-map edge: hairline rule plus a soft drop, so the sheet reads as
+     something laid on the page rather than a coloured box. */
+  box-shadow:0 0 0 1px rgba(94,64,36,.22),0 26px 46px rgba(74,48,25,.16)}
+.map-frame iframe{display:block;width:100%;height:100%;border:0}
+.visit-map figcaption{margin-top:14px;font:9px var(--mono);letter-spacing:.19em;text-transform:uppercase;color:#8e7359}
+
+/* ---- details ----------------------------------------------------------- */
+
+.visit-details{display:flex;flex-direction:column;gap:34px;padding-top:4px}
+
+.visit-details dl{margin:0;display:flex;flex-direction:column}
+.visit-details dl>div{padding:17px 0;border-top:1px solid rgba(94,64,36,.2)}
+.visit-details dl>div:last-child{border-bottom:1px solid rgba(94,64,36,.2)}
+.visit-details dt{font:9px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:#9a7a5b;margin-bottom:9px}
+.visit-details dd{margin:0;font:14px/1.6 var(--sans);color:#3b2718}
+.visit-details dd span{display:block}
+.visit-details dd a{border-bottom:1px solid rgba(94,64,36,.35);transition:color .25s}
+.visit-details dd a:hover{color:#9a5a26}
+
+.visit-actions{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.visit-section .button-light{background:var(--coffee);color:var(--cream)}
+.visit-section .button-light i{color:#e7c494}
+.visit-section .text-link{color:#5a4130;border-bottom-color:rgba(90,65,48,.4)}
+
+@media(max-width:1000px){
+  .visit-body{grid-template-columns:1fr;gap:40px}
+  .visit-details{flex-direction:row;flex-wrap:wrap;align-items:flex-start;gap:30px}
+  .visit-details dl{flex:1 1 320px}
+  .visit-actions{flex:1 1 240px;padding-top:14px}
+}
+@media(max-width:760px){
+  .visit-section{padding:88px 24px}
+  .visit-head{grid-template-columns:1fr;gap:26px;padding-bottom:40px}
+  .visit-lead{max-width:none}
+  /* align-items and the flex basis both carry over from the wider rule; in a
+     column they shrink the list to its content and truncate the hairlines. */
+  .visit-details{flex-direction:column;align-items:stretch;gap:28px}
+  .visit-details dl{flex:none}
+}

@@ -1,0 +1,16 @@
+node_modules/
+dist/
+
+# build tool caches
+.vite/
+*.local
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# logs
+npm-debug.log*
+yarn-error.log*

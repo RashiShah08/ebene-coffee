@@ -1,0 +1,11 @@
+/* The press quote strip. */
+
+.press-strip{background:#f7f0e5;padding:84px 22px;text-align:center;position:relative;overflow:hidden}
+.press-strip p{max-width:720px;margin:0 auto 24px;font:italic clamp(30px,4vw,58px)/1.05 var(--serif);letter-spacing:-.05em}
+.press-strip span{font:10px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:#826753}
+.press-ornament{position:absolute;color:#c7a077;font-size:220px;line-height:1;right:-36px;top:-60px;opacity:.15;
+  animation:spin 18s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:800px){.press-strip{padding:75px 24px}}
+@media(prefers-reduced-motion:reduce){.press-ornament{animation:none}}

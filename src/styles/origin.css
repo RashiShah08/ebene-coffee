@@ -1,0 +1,147 @@
+/* ==========================================================================
+   The beans.
+
+   Replaces the gradient-sphere version: a shape standing in for a place read
+   as decoration, not information. This is the back of the bag — the numbers a
+   buyer would actually ask for — next to a photograph of the cup the lot
+   becomes.
+   ========================================================================== */
+
+.origin-studio{background:#e3d6c1;color:#2f1d10;padding:126px clamp(22px,11vw,175px);
+  min-height:0;display:block;overflow:visible;position:relative}
+
+/* ---- head -------------------------------------------------------------- */
+
+.origin-head{display:grid;grid-template-columns:1.22fr .78fr;gap:clamp(36px,6vw,90px);align-items:end;
+  padding-bottom:52px}
+.origin-studio .kicker{color:#9a6535;margin-bottom:20px}
+.origin-head h2{font:500 clamp(42px,5.2vw,80px)/.9 var(--serif);letter-spacing:-.065em;margin:0}
+.origin-intro{max-width:450px;margin:0 0 6px;font-size:15px;line-height:1.85;color:#6b5544}
+
+/* ---- tabs -------------------------------------------------------------- */
+
+/* Full-width rail rather than three words on a line: each origin gets its
+   index, its name and its country, so the choice is legible before you pick. */
+.origin-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+  border-top:1px solid rgba(94,64,36,.26);border-bottom:1px solid rgba(65,40,25,.25)}
+.origin-tabs button{position:relative;display:grid;gap:5px;justify-items:start;text-align:left;
+  padding:22px 26px 22px 0;border:0;background:transparent;color:#7d6449;
+  border-left:1px solid rgba(94,64,36,.16);padding-left:26px;transition:color .3s}
+.origin-tabs button:first-child{border-left:0;padding-left:0}
+.origin-tabs button i{font:9px var(--mono);font-style:normal;letter-spacing:.18em;color:#a8845c}
+.origin-tabs button b{font:500 clamp(22px,2.4vw,32px)/1 var(--serif);letter-spacing:-.035em;text-transform:uppercase;color:#5c412c;transition:color .3s}
+.origin-tabs button span{font:9px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:#9a7f63}
+.origin-tabs button:hover b{color:#2f1d10}
+
+/* The lit rule sits on the top border, so the selected column reads as a tab
+   rather than as a highlighted word. */
+.origin-tabs button:before{content:'';position:absolute;left:0;right:0;top:-1px;height:2px;background:transparent;transition:background .35s}
+.origin-tabs button.active:before{background:linear-gradient(90deg,#a8552a,#d38b45)}
+.origin-tabs button.active{background:linear-gradient(180deg,rgba(168,85,42,.09),transparent 70%)}
+.origin-tabs button.active b{color:#2f1d10}
+.origin-tabs button.active i{color:#a8552a}
+
+/* ---- panel ------------------------------------------------------------- */
+
+/* Equal thirds, tops aligned. The photo is landscape rather than portrait so
+   the card lands at about the height of the two text columns — a 4:5 portrait
+   made it tower over them. */
+.origin-panel{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(28px,3.6vw,58px);
+  padding-top:52px;align-items:stretch}
+
+/* All three columns run to the same baseline: the two text columns become
+   flex columns and push their last block down, so the row ends level instead
+   of ragged. */
+.origin-lede,.origin-facts{display:flex;flex-direction:column}
+.origin-lede .origin-notes{margin-top:auto;padding-top:22px}
+.origin-facts .origin-profile{margin-top:auto}
+.origin-cup{align-self:stretch}
+
+.origin-lede h3{font:500 clamp(30px,3.4vw,46px)/1.02 var(--serif);letter-spacing:-.05em;margin:0 0 20px}
+.origin-lede h3 span{display:block}
+.origin-copy{max-width:320px;margin:0 0 24px;font-size:14px;line-height:1.85;color:#6b5544}
+
+.origin-notes{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0}
+.origin-notes li{padding:5px 10px;border-radius:100px;background:rgba(112,74,42,.1);
+  border:1px solid rgba(112,74,42,.16);color:#7a5535;
+  font:9px var(--mono);letter-spacing:.09em;text-transform:uppercase}
+
+/* ---- spec sheet -------------------------------------------------------- */
+
+/* Spec and profile share one column, so the panel stays three columns and the
+   cup keeps its own — four children in a three-column grid dropped it to a
+   second row. */
+.origin-facts{min-width:0}
+
+.origin-spec{margin:0;display:flex;flex-direction:column}
+.origin-spec>div{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  padding:13px 0;border-bottom:1px solid rgba(94,64,36,.2)}
+.origin-spec dt{font:9px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:#9a7f63}
+.origin-spec dd{margin:0;font:14px var(--sans);color:#3b2718;text-align:right}
+.origin-producer{flex-direction:column!important;align-items:flex-start!important;gap:7px!important}
+.origin-producer dd{text-align:left;font-style:italic;font-family:var(--serif);font-size:17px}
+
+/* ---- profile bars ------------------------------------------------------ */
+
+.origin-profile{margin-top:26px}
+.origin-profile-label{margin:0 0 14px;font:9px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:#9a7f63}
+.profile-row{display:grid;grid-template-columns:74px 1fr 28px;align-items:center;gap:12px;margin-bottom:10px}
+.profile-row>span:first-child{font-size:12px;color:#6b5544}
+.profile-bar{position:relative;height:3px;border-radius:100px;background:rgba(94,64,36,.16);overflow:hidden}
+.profile-bar i{position:absolute;inset:0 auto 0 0;width:var(--fill);border-radius:100px;
+  background:linear-gradient(90deg,var(--tone),#d99a52);
+  /* Grows on reveal, so the numbers land rather than just appearing. */
+  transform-origin:0 50%;animation:profile-grow .9s cubic-bezier(.16,1,.3,1) both}
+@keyframes profile-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.profile-row b{font:10px var(--mono);font-weight:400;color:#8a6039;text-align:right}
+
+/* ---- the cup ----------------------------------------------------------- */
+
+.origin-cup{margin:0;display:flex;flex-direction:column;background:linear-gradient(176deg,#fffcf6,#f6ead8);border-radius:18px;padding:10px;
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 20px 42px rgba(74,48,25,.2)}
+.origin-cup img{display:block;width:100%;height:auto;aspect-ratio:5/4;object-fit:cover;border-radius:11px}
+.origin-cup figcaption{display:grid;gap:3px;padding:14px 12px 8px;flex:none}
+.origin-cup figcaption>span{font:9px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:#9a7f63}
+.origin-cup figcaption>b{font:500 19px/1.15 var(--serif);letter-spacing:-.03em;color:#2f1d10}
+.origin-cup button{justify-self:start;margin-top:9px;display:inline-flex;align-items:center;gap:8px;
+  border:1px solid rgba(68,41,25,.28);border-radius:100px;background:transparent;color:var(--coffee);
+  padding:6px 6px 6px 13px;font:9.5px var(--mono);letter-spacing:.11em;text-transform:uppercase;
+  transition:background .3s,color .3s,border-color .3s}
+.origin-cup button i{font-style:normal;display:grid;place-items:center;width:21px;height:21px;border-radius:50%;
+  background:rgba(68,41,25,.1);font-size:13px;transition:transform .35s cubic-bezier(.16,1,.3,1),background .3s,color .3s}
+.origin-cup button:hover{background:var(--coffee);border-color:var(--coffee);color:var(--cream)}
+.origin-cup button:hover i{background:rgba(255,247,234,.2);color:var(--cream);transform:rotate(90deg)}
+
+/* ---- responsive -------------------------------------------------------- */
+
+@media(max-width:1080px){
+  .origin-head h2{font-size:clamp(40px,5.6vw,62px)}
+  /* Two columns: the story and the numbers stack down the left, the cup keeps
+     its own column beside them. Running the card full width left a photograph
+     with half a card of empty paper next to it. */
+  .origin-panel{grid-template-columns:1fr minmax(260px,.62fr);gap:30px 34px}
+  .origin-lede{grid-column:1;grid-row:1}
+  .origin-facts{grid-column:1;grid-row:2}
+  .origin-cup{grid-column:2;grid-row:1/3;align-self:start}
+  .origin-cup img{min-height:0;aspect-ratio:4/5;flex:none}
+}
+@media(max-width:820px){
+  .origin-head{grid-template-columns:1fr;gap:26px;padding-bottom:38px}
+  .origin-intro{max-width:none}
+  .origin-tabs{grid-template-columns:1fr}
+  .origin-tabs button{border-left:0;padding:16px 0;border-bottom:1px solid rgba(94,64,36,.14);
+    grid-template-columns:auto 1fr auto;align-items:baseline;gap:12px}
+  .origin-tabs button:before{top:auto;bottom:-1px}
+  .origin-tabs button span{justify-self:end}
+  .origin-panel{grid-template-columns:1fr;gap:34px;padding-top:34px}
+  .origin-lede,.origin-facts,.origin-cup{grid-column:1;grid-row:auto}
+  /* Stacked, the columns are auto-height, so margin-top:auto resolves to 0 and
+     the levelling spacers collapse. Put the real gaps back. */
+  .origin-lede .origin-notes{margin-top:0;padding-top:0}
+  .origin-facts .origin-profile{margin-top:26px}
+}
+@media(max-width:560px){
+  .origin-studio{padding:88px 24px}
+  .origin-cup figcaption{padding:16px 6px 8px}
+}
+@media(prefers-reduced-motion:reduce){.profile-bar i{animation:none}}
